@@ -11,6 +11,8 @@ This is a simple task management application built using TypeScript with an Expr
 - POSTGRES_USER
 - POSTGRES_PW
 - POSTGRES_DB
+- POSTGRES_PORT (NOTE: This is the port on which the db will be exposed)
+- POSTGRES_HOST (NOTE: This is the host on which the db will be exposed. Probably localhost)
 - PGADMIN_MAIL
 - PGADMIN_PW
 3. Run the following command to start the database:
