@@ -4,7 +4,7 @@ By: Liam Eckert
 
 This is a simple task management application built using TypeScript with an Express backend, a React frontend, and a PostgreSQL database.
 
-## Database Setup
+## Database Setup and Configuration
 
 1. Ensure Docker is installed.
 2. Configure the following environment variables in the backend directory:
@@ -22,5 +22,14 @@ docker compose up
 docker compose down
 ```
 
-
-
+## Backend Setup and Configuration
+1. Install dependencies:
+```
+npm install
+```
+2. Generate a private and public key pair. This will create a keys directory with the private and public keys:
+```
+npm run generate-keys
+```
+3. Configure the following environment variables in the backend directory:
+- PORT

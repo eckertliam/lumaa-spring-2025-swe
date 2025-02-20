@@ -17,10 +17,14 @@ function generateKeyPair(): void {
         }
     });
 
-    // convert the keys to base64 format and concatenate them into a single string
-    const envContent: string = `JWT_PRIVATE_KEY=${Buffer.from(privateKey).toString('base64')}\nJWT_PUBLIC_KEY=${Buffer.from(publicKey).toString('base64')}`;
-    // append the keys to the .env file
-    fs.appendFileSync('.env', envContent);
+    // if keys dir does not exist create it
+    if (!fs.existsSync('keys')) {
+        fs.mkdirSync('keys');
+    }
+
+    // write the keys to the keys directory
+    fs.writeFileSync('keys/private.pem', privateKey);
+    fs.writeFileSync('keys/public.pem', publicKey);
 }
 
 generateKeyPair();
