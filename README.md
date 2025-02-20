@@ -33,3 +33,8 @@ npm run generate-keys
 ```
 3. Configure the following environment variables in the backend directory:
 - PORT
+- CORS_ORIGIN (e.g. the URL of the frontend application)
+4. Start the backend server (NOTE: Ensure the database is running before starting the backend server):
+```
+npm run dev
+```
