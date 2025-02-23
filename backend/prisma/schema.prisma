@@ -1,0 +1,38 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model with required fields and relations
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String   // Will store hashed password
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tasks     Task[]   // Relation to tasks
+
+  @@map("users") // Explicitly map to 'users' table
+}
+
+// Task model with all required fields and user relation
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?  // Optional field
+  isComplete  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relation to user who created the task
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("tasks") // Explicitly map to 'tasks' table
+  @@index([userId]) // Index for better query performance
+}
+

@@ -1,6 +1,8 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import taskRoutes from './routes/task.routes';
+import authRoutes from './routes/auth.routes';
 
 dotenv.config();
 
@@ -18,6 +20,10 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+// routes for the API
+app.use('/auth', authRoutes);
+app.use('/tasks', taskRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

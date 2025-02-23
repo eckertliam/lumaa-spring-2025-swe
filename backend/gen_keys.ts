@@ -2,6 +2,9 @@
 
 import crypto from 'crypto';
 import fs from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 function generateKeyPair(): void {
     // generate a private and public key pair using RSA encryption
@@ -18,13 +21,13 @@ function generateKeyPair(): void {
     });
 
     // if keys dir does not exist create it
-    if (!fs.existsSync('keys')) {
-        fs.mkdirSync('keys');
+    if (!fs.existsSync(process.env.JWT_KEY_DIR as string)) {
+        fs.mkdirSync(process.env.JWT_KEY_DIR as string);
     }
 
     // write the keys to the keys directory
-    fs.writeFileSync('keys/private.pem', privateKey);
-    fs.writeFileSync('keys/public.pem', publicKey);
+    fs.writeFileSync(process.env.JWT_KEY_DIR + '/private.pem', privateKey);
+    fs.writeFileSync(process.env.JWT_KEY_DIR + '/public.pem', publicKey);
 }
 
 generateKeyPair();
