@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { User } from '@prisma/client';
 import { authService, registerService, SignedUser } from '../services/auth.service';
 import { registerSchema, authenticateSchema, RegisterSchema, AuthenticateSchema } from 'shared';
 
