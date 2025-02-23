@@ -3,8 +3,6 @@ import { createTaskService, getTasksService, updateTaskService, deleteTaskServic
 import { Task } from '@prisma/client';
 import { SignedUser, verifyJwtService } from '../services/auth.service';
 
-// TODO: use zod to validate the request body and params
-
 /**
  * Helper function to verify the authorization header exists and verify the JWT token
  * @param req - The request object
