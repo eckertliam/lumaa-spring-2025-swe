@@ -2,12 +2,22 @@ import { z } from 'zod';
 
 /**
  * Schema for user registration
- * @property {string} username - The desired username
- * @property {string} password - The user's password
+ * @property {string} username - The desired username (3-30 chars, alphanumeric with underscores)
+ * @property {string} password - The user's password (8-100 chars, must include number and special char)
  */
 export const registerSchema = z.object({
-    username: z.string(),
-    password: z.string(),
+    username: z.string()
+        .min(3, 'Username must be at least 3 characters')
+        .max(30, 'Username cannot exceed 30 characters')
+        .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
+        .trim(),
+    password: z.string()
+        .min(8, 'Password must be at least 8 characters')
+        .max(100, 'Password cannot exceed 100 characters')
+        .regex(/[0-9]/, 'Password must contain at least one number')
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character')
+        .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+        .regex(/[a-z]/, 'Password must contain at least one lowercase letter'),
 });
 
 /**
@@ -19,12 +29,18 @@ export type RegisterSchema = z.infer<typeof registerSchema>;
 
 /**
  * Schema for user authentication
- * @property {string} username - The user's username
- * @property {string} password - The user's password
+ * @property {string} username - The user's username (3-30 chars, alphanumeric with underscores)
+ * @property {string} password - The user's password (8-100 chars)
  */
 export const authenticateSchema = z.object({
-    username: z.string(),
-    password: z.string(),
+    username: z.string()
+        .min(3, 'Username must be at least 3 characters')
+        .max(30, 'Username cannot exceed 30 characters')
+        .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
+        .trim(),
+    password: z.string()
+        .min(8, 'Password must be at least 8 characters')
+        .max(100, 'Password cannot exceed 100 characters'),
 });
 
 /**

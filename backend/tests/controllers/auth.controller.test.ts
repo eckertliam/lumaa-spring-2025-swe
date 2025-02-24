@@ -15,6 +15,12 @@ describe('Auth Controller', () => {
   let statusMock: jest.Mock;
   let jsonMock: jest.Mock;
 
+  // Valid test data that matches Zod schema requirements
+  const validTestData = {
+    username: 'validuser123',
+    password: 'ValidPass123!'
+  };
+
   // Reset request and response mocks before each test
   beforeEach(() => {
     req = {};
@@ -32,8 +38,8 @@ describe('Auth Controller', () => {
     // Test successful registration
     it('should register a new user and return 201 status', async () => {
       // Provide a valid request body
-      req.body = { username: 'testuser', password: 'password123' };
-      const expectedUser = { token: 'jwtToken', username: 'testuser' };
+      req.body = validTestData;
+      const expectedUser = { token: 'jwtToken', username: validTestData.username };
 
       // Setup registerService mock to simulate a successful registration
       (registerService as jest.Mock).mockResolvedValue(expectedUser);
@@ -48,7 +54,7 @@ describe('Auth Controller', () => {
 
     // Test registration failure when user already exists
     it('should return 409 if user already exists', async () => {
-      req.body = { username: 'testuser', password: 'password123' };
+      req.body = validTestData;
 
       // Setup registerService mock to simulate an existing user
       (registerService as jest.Mock).mockResolvedValue(undefined);
@@ -62,29 +68,21 @@ describe('Auth Controller', () => {
 
     // Test error handling when the request is invalid
     it('should return 400 if there is an error in request', async () => {
-      req.body = {}; // Invalid body to trigger parse error
-
-      // Spy on registerSchema.parse to force an error
-      const parseSpy = jest.spyOn(registerSchema, 'parse').mockImplementation(() => {
-        throw new Error('Invalid request');
-      });
+      req.body = { username: 'ab', password: 'short' }; // Invalid data that won't pass Zod validation
 
       await register(req as Request, res as Response);
 
       // Verify that the controller returns a 400 status and correct error message
       expect(statusMock).toHaveBeenCalledWith(400);
       expect(jsonMock).toHaveBeenCalledWith({ error: 'Invalid request' });
-
-      // Restore the original implementation of parse
-      parseSpy.mockRestore();
     });
   });
 
   describe('authenticate', () => {
     // Test successful authentication
     it('should authenticate valid user and return 200 status', async () => {
-      req.body = { username: 'testuser', password: 'password123' };
-      const expectedUser = { token: 'jwtToken', username: 'testuser' };
+      req.body = validTestData;
+      const expectedUser = { token: 'jwtToken', username: validTestData.username };
 
       // Setup authService mock to simulate successful authentication
       (authService as jest.Mock).mockResolvedValue(expectedUser);
@@ -98,7 +96,7 @@ describe('Auth Controller', () => {
 
     // Test authentication failure when user credentials are incorrect
     it('should return 400 if authentication fails', async () => {
-      req.body = { username: 'testuser', password: 'password123' };
+      req.body = validTestData;
 
       // Setup authService mock to simulate failed authentication (returning undefined)
       (authService as jest.Mock).mockResolvedValue(undefined);
@@ -112,21 +110,13 @@ describe('Auth Controller', () => {
 
     // Test error handling when the request is invalid
     it('should return 400 if there is an error in request', async () => {
-      req.body = {}; // Invalid body to trigger parse error
-
-      // Spy on authenticateSchema.parse to force an error
-      const parseSpy = jest.spyOn(authenticateSchema, 'parse').mockImplementation(() => {
-        throw new Error('Invalid request');
-      });
+      req.body = { username: 'ab', password: 'short' }; // Invalid data that won't pass Zod validation
 
       await authenticate(req as Request, res as Response);
 
       // Verify that the controller returns a 400 status and correct error message
       expect(statusMock).toHaveBeenCalledWith(400);
       expect(jsonMock).toHaveBeenCalledWith({ error: 'Invalid request' });
-
-      // Restore the original implementation
-      parseSpy.mockRestore();
     });
   });
 });
