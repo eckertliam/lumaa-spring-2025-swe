@@ -35,21 +35,21 @@ describe('Task Controller', () => {
     });
 
     describe('verifyAuth Middleware', () => {
-        it('should return 403 if no authorization header is present', async () => {
+        it('should return 401 if no authorization header is present', async () => {
             await verifyAuth(mockRequest as Request, mockResponse as Response, nextFunction);
 
-            expect(mockResponse.status).toHaveBeenCalledWith(403);
+            expect(mockResponse.status).toHaveBeenCalledWith(401);
             expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Authentication required' });
             expect(nextFunction).not.toHaveBeenCalled();
         });
 
-        it('should return 403 if JWT verification fails', async () => {
+        it('should return 401 if JWT verification fails', async () => {
             mockRequest.headers = { authorization: 'Bearer invalid-token' };
             jest.spyOn(authService, 'verifyJwtService').mockResolvedValue(undefined);
 
             await verifyAuth(mockRequest as Request, mockResponse as Response, nextFunction);
 
-            expect(mockResponse.status).toHaveBeenCalledWith(403);
+            expect(mockResponse.status).toHaveBeenCalledWith(401);
             expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Invalid or expired token' });
             expect(nextFunction).not.toHaveBeenCalled();
         });

@@ -20,19 +20,20 @@ import {
  * @param req - The request object
  * @param res - The response object
  * @param next - The next function
+ * @returns a 401 (unauthorized) response if the user is not authenticated
  */
 export async function verifyAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
     // Verify authentication header exists
     const authHeader: string | undefined = req.headers.authorization;
     if (!authHeader) {
-        res.status(403).json({ error: 'Authentication required' });
+        res.status(401).json({ error: 'Authentication required' });
         return;
     }
 
     // Verify JWT and get user details
     const user: SignedUser | undefined = await verifyJwtService(authHeader);
     if (!user) {
-        res.status(403).json({ error: 'Invalid or expired token' });
+        res.status(401).json({ error: 'Invalid or expired token' });
         return;
     }
 
@@ -46,7 +47,7 @@ export async function verifyAuth(req: Request, res: Response, next: NextFunction
  * @param req - The request object
  * @param res - The response object
  * @returns A 200 (ok) response with a list of tasks, 
- * a 403 (forbidden) response if the user is not authenticated, 
+ * a 401 (unauthorized) response if the user is not authenticated, 
  * or a 400 (bad request) response if the request is invalid
  */
 export async function getTasks(req: Request, res: Response): Promise<void> {
@@ -65,7 +66,7 @@ export async function getTasks(req: Request, res: Response): Promise<void> {
  * @param req - The request object
  * @param res - The response object
  * @returns A 201 (created) response with the created task, 
- * a 403 (forbidden) response if the user is not authenticated, 
+ * a 401 (unauthorized) response if the user is not authenticated, 
  * or a 400 (bad request) response if the request is invalid
  */
 export async function createTask(req: Request, res: Response): Promise<void> {
@@ -86,7 +87,7 @@ export async function createTask(req: Request, res: Response): Promise<void> {
  * @param req - The request object
  * @param res - The response object
  * @returns A 200 (ok) response with the updated task, 
- * a 403 (forbidden) response if the user is not authenticated, 
+ * a 401 (unauthorized) response if the user is not authenticated, 
  * or a 400 (bad request) response if the request is invalid
  */
 export async function updateTask(req: Request, res: Response): Promise<void> {
@@ -112,7 +113,7 @@ export async function updateTask(req: Request, res: Response): Promise<void> {
  * @param req - The request object
  * @param res - The response object
  * @returns A 200 (ok) response with the deleted task, 
- * a 403 (forbidden) response if the user is not authenticated, 
+ * a 401 (unauthorized) response if the user is not authenticated, 
  * or a 400 (bad request) response if the request is invalid
  */
 export async function deleteTask(req: Request, res: Response): Promise<void> {

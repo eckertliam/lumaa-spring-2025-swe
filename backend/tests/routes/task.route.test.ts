@@ -90,7 +90,7 @@ describe('Task Routes', () => {
         it('should reject requests without auth header', async () => {
             await verifyAuth(req as Request, res as Response, next);
 
-            expect(res.status).toHaveBeenCalledWith(403);
+            expect(res.status).toHaveBeenCalledWith(401);
             expect(res.json).toHaveBeenCalledWith({ error: 'Authentication required' });
             expect(next).not.toHaveBeenCalled();
         });
@@ -101,7 +101,7 @@ describe('Task Routes', () => {
 
             await verifyAuth(req as Request, res as Response, next);
 
-            expect(res.status).toHaveBeenCalledWith(403);
+            expect(res.status).toHaveBeenCalledWith(401);
             expect(res.json).toHaveBeenCalledWith({ error: 'Invalid or expired token' });
             expect(next).not.toHaveBeenCalled();
         });
