@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
+import { act } from 'react';
 import Register from './Register';
 
 // Mock the fetch function
@@ -105,8 +106,10 @@ describe('Register Component', () => {
         });
 
         // Fill and submit form
-        fillForm('validuser', 'ValidPass1!');
-        fireEvent.submit(screen.getByRole('button', { name: /register/i }));
+        await act(async () => {
+            fillForm('validuser', 'ValidPass1!');
+            fireEvent.submit(screen.getByRole('button', { name: /register/i }));
+        });
 
         // Wait for navigation
         await vi.waitFor(() => {
@@ -156,16 +159,18 @@ describe('Register Component', () => {
 
         // Fill and submit form
         fillForm('validuser', 'ValidPass1!');
-        fireEvent.submit(screen.getByRole('button', { name: /register/i }));
+        fireEvent.submit(screen.getByRole('button', { name: /register/i }) as HTMLButtonElement);
+
+        // Wait for loading state
+        const loadingButton = await screen.findByRole('button', { name: /registering\.\.\./i }) as HTMLButtonElement;
 
         // Check if form elements are disabled
         const usernameInput = screen.getByLabelText(/username/i) as HTMLInputElement;
         const passwordInput = screen.getByLabelText(/password/i) as HTMLInputElement;
-        const submitButton = screen.getByRole('button', { name: /registering/i }) as HTMLButtonElement;
 
         expect(usernameInput.disabled).toBe(true);
         expect(passwordInput.disabled).toBe(true);
-        expect(submitButton.disabled).toBe(true);
+        expect(loadingButton.disabled).toBe(true);
     });
 
     it('clears field-specific errors on input change', async () => {

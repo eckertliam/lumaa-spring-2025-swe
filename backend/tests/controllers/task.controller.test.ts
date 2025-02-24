@@ -73,7 +73,10 @@ describe('Task Controller', () => {
         ];
 
         it('should return tasks successfully', async () => {
-            mockRequest.body = { userId: '1' };
+            // Setup authenticated user
+            const mockUser = { id: '1', username: 'testuser', token: 'valid-token' };
+            (mockRequest as any).user = mockUser;
+            
             jest.spyOn(taskService, 'getTasksService').mockResolvedValue(mockTasks);
 
             await getTasks(mockRequest as Request, mockResponse as Response);
@@ -83,12 +86,13 @@ describe('Task Controller', () => {
         });
 
         it('should return 400 on invalid request', async () => {
-            mockRequest.body = {}; // Invalid request body
-
+            // No user attached to request
             await getTasks(mockRequest as Request, mockResponse as Response);
 
             expect(mockResponse.status).toHaveBeenCalledWith(400);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Invalid request' });
+            expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({
+                error: 'Invalid user ID'
+            }));
         });
     });
 
@@ -103,9 +107,14 @@ describe('Task Controller', () => {
             updatedAt: new Date(),
         };
 
+        beforeEach(() => {
+            // Setup authenticated user for each test
+            const mockUser = { id: '1', username: 'testuser', token: 'valid-token' };
+            (mockRequest as any).user = mockUser;
+        });
+
         it('should create task successfully', async () => {
             mockRequest.body = {
-                userId: '1',
                 title: 'New Task',
                 description: 'New Description',
             };
@@ -119,7 +128,6 @@ describe('Task Controller', () => {
 
         it('should create task without description', async () => {
             mockRequest.body = {
-                userId: '1',
                 title: 'New Task',
             };
             jest.spyOn(taskService, 'createTaskService').mockResolvedValue(mockTask);
@@ -130,12 +138,14 @@ describe('Task Controller', () => {
         });
 
         it('should return 400 on invalid request', async () => {
-            mockRequest.body = { userId: '1' }; // Missing required title
+            mockRequest.body = {}; // Missing required title
 
             await createTask(mockRequest as Request, mockResponse as Response);
 
             expect(mockResponse.status).toHaveBeenCalledWith(400);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Invalid request' });
+            expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({
+                error: 'Validation error'
+            }));
         });
     });
 
@@ -160,7 +170,10 @@ describe('Task Controller', () => {
 
             await updateTask(mockRequest as Request, mockResponse as Response);
 
-            expect(taskService.updateTaskService).toHaveBeenCalledWith('123e4567-e89b-12d3-a456-426614174000', 'Updated Task', 'Updated Description');
+            expect(taskService.updateTaskService).toHaveBeenCalledWith(
+                '123e4567-e89b-12d3-a456-426614174000',
+                { title: 'Updated Task', description: 'Updated Description' }
+            );
             expect(mockResponse.status).toHaveBeenCalledWith(200);
             expect(mockResponse.json).toHaveBeenCalledWith(mockUpdatedTask);
         });
@@ -175,7 +188,9 @@ describe('Task Controller', () => {
             await updateTask(mockRequest as Request, mockResponse as Response);
 
             expect(mockResponse.status).toHaveBeenCalledWith(400);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Invalid request' });
+            expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({
+                error: 'Invalid task ID'
+            }));
         });
     });
 
@@ -207,7 +222,9 @@ describe('Task Controller', () => {
             await deleteTask(mockRequest as Request, mockResponse as Response);
 
             expect(mockResponse.status).toHaveBeenCalledWith(400);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Invalid request' });
+            expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({
+                error: 'Invalid task ID'
+            }));
         });
     });
 });

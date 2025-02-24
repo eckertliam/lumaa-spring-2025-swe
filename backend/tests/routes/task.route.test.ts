@@ -110,7 +110,7 @@ describe('Task Routes', () => {
     describe('getTasks', () => {
         it('should return tasks for authenticated user', async () => {
             // Setup request with valid user ID
-            req.body = { userId: mockUser.id };
+            (req as any).user = { id: mockUser.id };
             
             // Mock database response
             (prisma.task.findMany as jest.Mock).mockResolvedValueOnce([mockTask]);
@@ -125,119 +125,129 @@ describe('Task Routes', () => {
         });
 
         it('should return 400 for invalid request', async () => {
-            req.body = {}; // Missing userId
-
+            // No user attached to request
+            (req as any).user = undefined;
             await getTasks(req as Request, res as Response);
 
             expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Invalid request' });
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+                error: 'Invalid user ID'
+            }));
             expect(prisma.task.findMany).not.toHaveBeenCalled();
         });
     });
 
     describe('createTask', () => {
-        const newTaskData = {
-            userId: mockUser.id,
-            title: 'New Task',
-            description: 'New Description'
-        };
+        beforeEach(() => {
+            // Setup authenticated user for each test
+            (req as any).user = { id: mockUser.id };
+        });
 
         it('should create a new task', async () => {
-            req.body = newTaskData;
-            (prisma.task.create as jest.Mock).mockResolvedValueOnce({
-                ...mockTask,
-                ...newTaskData
-            });
+            req.body = {
+                title: 'Test Task',
+                description: 'Test Description'
+            };
+            (prisma.task.create as jest.Mock).mockResolvedValueOnce(mockTask);
 
             await createTask(req as Request, res as Response);
 
             expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.json).toHaveBeenCalledWith(expect.objectContaining(newTaskData));
+            expect(res.json).toHaveBeenCalledWith(mockTask);
             expect(prisma.task.create).toHaveBeenCalledWith({
-                data: newTaskData
+                data: {
+                    userId: mockUser.id,
+                    title: 'Test Task',
+                    description: 'Test Description'
+                }
             });
         });
 
         it('should create a task without description', async () => {
-            const taskWithoutDesc = {
-                userId: mockUser.id,
-                title: 'New Task'
+            req.body = {
+                title: 'Test Task'
             };
-            req.body = taskWithoutDesc;
-            
-            (prisma.task.create as jest.Mock).mockResolvedValueOnce({
-                ...mockTask,
-                ...taskWithoutDesc,
-                description: null
-            });
+            (prisma.task.create as jest.Mock).mockResolvedValueOnce(mockTask);
 
             await createTask(req as Request, res as Response);
 
             expect(res.status).toHaveBeenCalledWith(201);
+            expect(res.json).toHaveBeenCalledWith(mockTask);
             expect(prisma.task.create).toHaveBeenCalledWith({
-                data: taskWithoutDesc
+                data: {
+                    userId: mockUser.id,
+                    title: 'Test Task',
+                    description: undefined
+                }
             });
         });
 
         it('should return 400 for invalid request', async () => {
-            req.body = { title: '' }; // Missing required fields
+            req.body = {}; // Missing required title
 
             await createTask(req as Request, res as Response);
 
             expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Invalid request' });
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+                error: 'Validation error'
+            }));
             expect(prisma.task.create).not.toHaveBeenCalled();
         });
     });
 
     describe('updateTask', () => {
-        const updateData = {
-            title: 'Updated Task',
-            description: 'Updated Description'
-        };
-
         it('should update an existing task', async () => {
-            // Use taskId in params to match schema expectation
             req.params = { id: mockTask.id };
-            req.body = updateData;
-            
+            req.body = {
+                title: 'Updated Task',
+                description: 'Updated Description'
+            };
             (prisma.task.update as jest.Mock).mockResolvedValueOnce({
                 ...mockTask,
-                ...updateData
+                title: 'Updated Task',
+                description: 'Updated Description'
             });
 
             await updateTask(req as Request, res as Response);
 
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(expect.objectContaining(updateData));
             expect(prisma.task.update).toHaveBeenCalledWith({
                 where: { id: mockTask.id },
-                data: updateData
+                data: {
+                    title: 'Updated Task',
+                    description: 'Updated Description'
+                }
             });
         });
 
         it('should return 400 for invalid task ID', async () => {
-            req.params = { id: 'not-a-uuid' };
-            req.body = updateData;
-
-            await updateTask(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Invalid request' });
-            expect(prisma.task.update).not.toHaveBeenCalled();
-        });
-
-        it('should return 400 for invalid update data', async () => {
-            req.params = { id: mockTask.id };
-            // Missing required title field
+            req.params = { id: 'invalid-uuid' };
             req.body = {
-                description: 'Only description without title'
+                title: 'Updated Task'
             };
 
             await updateTask(req as Request, res as Response);
 
             expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Invalid request' });
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+                error: 'Invalid task ID'
+            }));
+            expect(prisma.task.update).not.toHaveBeenCalled();
+        });
+
+        it('should return 400 for invalid update data', async () => {
+            req.params = { id: mockTask.id };
+            req.body = {
+                title: '', // Invalid empty title
+                description: ''
+            };
+
+            await updateTask(req as Request, res as Response);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+                error: 'Invalid update data'
+            }));
             expect(prisma.task.update).not.toHaveBeenCalled();
         });
     });
@@ -257,12 +267,14 @@ describe('Task Routes', () => {
         });
 
         it('should return 400 for invalid task ID', async () => {
-            req.params = { id: 'not-a-uuid' };
+            req.params = { id: 'invalid-uuid' };
 
             await deleteTask(req as Request, res as Response);
 
             expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Invalid request' });
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+                error: 'Invalid task ID'
+            }));
             expect(prisma.task.delete).not.toHaveBeenCalled();
         });
     });

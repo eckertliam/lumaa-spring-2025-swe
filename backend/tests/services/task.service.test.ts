@@ -126,7 +126,7 @@ describe('Task Service', () => {
             prismaMock.task.update.mockResolvedValue(mockUpdatedTask);
 
             // Act
-            const result = await updateTaskService(taskId, title, description);
+            const result = await updateTaskService(taskId, { title, description });
 
             // Assert
             expect(result).toEqual(mockUpdatedTask);
@@ -142,7 +142,7 @@ describe('Task Service', () => {
             prismaMock.task.update.mockRejectedValue(new Error('Task not found'));
 
             // Act & Assert
-            await expect(updateTaskService(taskId, 'title')).rejects.toThrow('Task not found');
+            await expect(updateTaskService(taskId, { title: 'title' })).rejects.toThrow('Task not found');
         });
     });
 

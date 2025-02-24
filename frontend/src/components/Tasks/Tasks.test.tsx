@@ -60,14 +60,13 @@ describe('Tasks Component', () => {
             renderTasks();
         });
         
-        // Verify the request includes userId in header
+        // Verify the request includes authorization header
         expect(mockFetch).toHaveBeenCalledWith(
             `${import.meta.env.VITE_API_URL}/tasks`,
             expect.objectContaining({
                 headers: expect.objectContaining({
                     'Authorization': expect.any(String),
-                    'Content-Type': 'application/json',
-                    'X-User-Id': 'test-user-id'
+                    'Content-Type': 'application/json'
                 })
             })
         );
