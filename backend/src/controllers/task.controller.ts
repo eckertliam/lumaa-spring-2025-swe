@@ -154,9 +154,9 @@ export async function updateTask(req: Request, res: Response): Promise<void> {
         }
 
         const { taskId } = paramsResult.data;
-        const { title, description } = bodyResult.data;
-
-        const task: Task = await updateTaskService(taskId, title, description);
+        
+        // Pass the validated data directly to the service
+        const task: Task = await updateTaskService(taskId, bodyResult.data);
         res.status(200).json(task);
     } catch (error) {
         console.error('Error updating task:', error);

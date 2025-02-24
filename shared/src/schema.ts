@@ -86,15 +86,18 @@ export type CreateTaskSchema = z.infer<typeof createTaskSchema>;
 
 /**
  * Schema for updating a task's content
- * @property {string} title - The new title of the task
+ * @property {string} [title] - Optional new title of the task
  * @property {string} [description] - Optional new description of the task
+ * @property {boolean} [isComplete] - Optional completion status of the task
  */
 export const updateTaskSchema = z.object({
     title: z.string()
         .min(1, 'Title is required')
         .max(100, 'Title cannot exceed 100 characters')
-        .trim(),
-    description: z.string().optional()
+        .trim()
+        .optional(),
+    description: z.string().optional(),
+    isComplete: z.boolean().optional()
 });
 
 /**
@@ -109,6 +112,7 @@ export const updateTaskParamsSchema = z.object({
  * Type representing the data required to update a task's content
  * @property {string} title - The new title of the task
  * @property {string} [description] - Optional new description of the task
+ * @property {boolean} [isComplete] - Optional completion status of the task
  */
 export type UpdateTaskSchema = z.infer<typeof updateTaskSchema>;
 

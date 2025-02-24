@@ -34,17 +34,22 @@ export async function createTaskService(userId: string, title: string, descripti
 /**
  * Update a task by id
  * @param taskId - The id of the task to update
- * @param title - The title of the task
- * @param description - The description of the task
+ * @param updates - Partial task data to update
  * @returns The updated task
  */
-export async function updateTaskService(taskId: string, title: string, description?: string): Promise<Task> {
+export async function updateTaskService(
+    taskId: string,
+    updates: {
+        title?: string;
+        description?: string;
+        isComplete?: boolean;
+    }
+): Promise<Task> {
     return prisma.task.update({
         where: { id: taskId },
-        data: { title, description },
+        data: updates,
     });
 }
-
 
 /**
  * Delete a task by id
