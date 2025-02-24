@@ -1,78 +1,125 @@
-# Project Overview
+# Task Management Application
 
 By: Liam Eckert
 
-This is a simple task management application built using TypeScript with an Express backend, a React frontend, and a PostgreSQL database.
+## Overview
+A modern task management application built with:
+- Frontend: React + TypeScript
+- Backend: Express + TypeScript
+- Database: PostgreSQL
+- Architecture: Monorepo structure with shared types
 
-## Running the project
-- Follow the instructions below to run the project locally
-- First follow the database setup instructions below
-- Then follow the backend setup instructions below
-- Then follow the frontend setup instructions below
-- Finally in the root directory run the following command to start the project:
+## Prerequisites
+- Node.js (LTS version recommended)
+- PostgreSQL installed and running
+- npm or yarn package manager
+
+## Quick Start
+For a quick setup of the entire application:
+
+1. Clone the repository
+2. Install all dependencies:
+   ```bash
+   npm run install-all
+   ```
+3. Follow the configuration steps below
+4. Start the entire application:
+   ```bash
+   npm run dev
+   ```
+
+## Project Structure
 ```
-npm run dev
+├── frontend/    # React frontend application
+├── backend/     # Express backend server
+└── shared/      # Shared types and utilities
 ```
-- To test both frontend and backend, run the following command:
-```
+
+## Detailed Setup Guide
+
+### 1. Database Setup
+1. Ensure PostgreSQL is running on your system
+2. Navigate to the `backend` directory
+3. Create environment configuration:
+   ```bash
+   cp .env.example .env
+   ```
+4. Update `.env` with your PostgreSQL credentials
+5. Initialize the database:
+   ```bash
+   npx prisma generate    # Generate Prisma client
+   npx prisma migrate dev # Apply database migrations
+   ```
+
+### 2. Backend Setup
+1. Navigate to the `backend` directory
+2. Install dependencies (if not done via install-all):
+   ```bash
+   npm install
+   ```
+3. Generate authentication keys:
+   ```bash
+   npm run generate-keys
+   ```
+4. Configure environment:
+   ```bash
+   cp .env.example .env
+   ```
+   Update the following in `.env`:
+   - Database connection settings
+   - CORS origin settings
+   - Any other environment-specific variables
+
+5. Start the backend server:
+   ```bash
+   npm run dev
+   ```
+
+### 3. Frontend Setup
+1. Navigate to the `frontend` directory
+2. Install dependencies (if not done via install-all):
+   ```bash
+   npm install
+   ```
+3. Configure environment:
+   ```bash
+   cp .env.example .env
+   ```
+   Update `VITE_API_URL` in `.env` to match your backend URL (default: http://localhost:3000)
+
+4. Start the frontend development server:
+   ```bash
+   npm run dev
+   ```
+
+## Testing
+Run tests for both frontend and backend:
+```bash
 npm run test
 ```
-- To quickly install all dependencies, run the following command:
-```
-npm install-all
-```
 
-## Database Setup and Configuration
+Or test individual components:
+- Frontend tests: `npm test -w frontend`
+- Backend tests: `npm test -w backend`
 
-- Navigate to the backend directory and if you haven't already installed the dependencies, run the following command:
-```
-npm install
-```
-- If you haven't already, create a .env and copy from .env.example, alter the variables to match your local database configuration.
-- Generate the Prisma client:
-```
-npx prisma generate
-```
-- Migrate the database to match the prisma schema:
-```
-npx prisma migrate dev
-```
+## Available Scripts
+- `npm run dev` - Start both frontend and backend in development mode
+- `npm run build` - Build the entire application
+- `npm run test` - Run all tests
+- `npm run install-all` - Install dependencies for all workspaces
 
-## Backend Setup and Configuration
-- Navigate to the backend directory and install the dependencies if you haven't already:
-```
-npm install
-```
-- Generate a private and public key pair. This will create a keys directory with the private and public keys:
-```
-npm run generate-keys
-```
-- If you haven't already, create a .env and copy from .env.example, alter the variables to match your local database configuration and cors origin.
-- Ensure you have already setup your databse following the instructions above.
-- Start the backend server (NOTE: Ensure the database is running before starting the backend server):
-```
-npm run dev
-```
+## Troubleshooting
+- Ensure PostgreSQL is running before starting the backend
+- Check that all environment variables are properly set
+- Verify that the backend is running before starting the frontend
+- For database connection issues, verify your PostgreSQL credentials in `.env`
 
-### Testing the backend
-- Run the following command to test the backend:
-```
-npm run test
-```
+## Additional Resources
+- Frontend runs on: http://localhost:5173 (default)
+- Backend API runs on: http://localhost:3000 (default)
 
-## Frontend Setup and Configuration
-- Navigate to the frontend directory and install the dependencies if you haven't already:
-```
-npm install
-```
-- To setup the frontend to connect to your local backend, you will need to update the VITE_API_URL in the .env file to match your local backend URL, using .env.example as a reference.
-- Start the frontend server:
-```
-npm run dev
-```
+## Demo
+View a demonstration of the application in action: [Watch Demo Video](./example.mov)
 
-### Testing the frontend
-- Run the following command to test the frontend:
-```
-npm run test
-```
+## Expected Salary Per Month
+$3,000
