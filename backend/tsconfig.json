@@ -11,6 +11,6 @@
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts", "gen_keys.ts"],
+  "include": ["src/**/*.ts", "gen_keys.ts", "tests/**/*.ts"],
   "exclude": ["node_modules"]
 }
