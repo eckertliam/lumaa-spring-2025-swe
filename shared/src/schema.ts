@@ -66,19 +66,19 @@ export type GetTasksSchema = z.infer<typeof getTasksSchema>;
 
 /**
  * Schema for creating a new task
- * @property {string} userId - The unique identifier of the user creating the task
  * @property {string} title - The title of the task
  * @property {string} [description] - Optional description of the task
  */
 export const createTaskSchema = z.object({
-    userId: z.string(),
-    title: z.string(),
-    description: z.string().optional(),
+    title: z.string()
+        .min(1, 'Title is required')
+        .max(100, 'Title cannot exceed 100 characters')
+        .trim(),
+    description: z.string().optional()
 });
 
 /**
  * Type representing the data required to create a new task
- * @property {string} userId - The unique identifier of the user creating the task
  * @property {string} title - The title of the task
  * @property {string} [description] - Optional description of the task
  */
@@ -90,8 +90,11 @@ export type CreateTaskSchema = z.infer<typeof createTaskSchema>;
  * @property {string} [description] - Optional new description of the task
  */
 export const updateTaskSchema = z.object({
-    title: z.string(),
-    description: z.string().optional(),
+    title: z.string()
+        .min(1, 'Title is required')
+        .max(100, 'Title cannot exceed 100 characters')
+        .trim(),
+    description: z.string().optional()
 });
 
 /**

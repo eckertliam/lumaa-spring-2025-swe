@@ -1,0 +1,19 @@
+{
+  "name": "lumaa-spring-2025-swe",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm run build -w shared && concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
+    "build": "npm run build -w frontend && npm run build -w backend",
+    "test": "concurrently \"npm test -w frontend\" \"npm test -w backend\"",
+    "install-all": "npm install && npm install -w frontend && npm install -w backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 
